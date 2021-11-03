@@ -1,4 +1,5 @@
 import json
+import sys
 
 import requests
 from bs4 import BeautifulSoup
@@ -23,7 +24,7 @@ if __name__ == '__main__':
         regions[region['data-index']] = region.text.strip()
 
     if not len(regions):
-        print("no regions found, something is fucked!")
+        print("no regions found, something is fucked!", file=sys.stderr)
         exit(1)
 
     results = dict()
@@ -31,7 +32,8 @@ if __name__ == '__main__':
         results[region_name] = scrape_servers(region_id)
         count = len(results[region_name])
         if not count:
-            print("no servers in region " + region_name + ", something is fucked!")
+            print("no servers in region " + region_name + ", something is fucked!", file=sys.stderr)
+            exit(1)
         else:
             print(region_name + ": " + str(count) + " servers")
 
