@@ -1,0 +1,49 @@
+name: release
+
+'on':
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Timestamp
+        run: echo "EPOCH=$(date +%s)" >> $GITHUB_ENV
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Dependencies
+        run: pip install -r requirements.txt
+
+      - name: Scrape
+        run: python main.py
+
+      - name: Draft
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.EPOCH }}
+          release_name: ${{ env.EPOCH }}
+          body: 'automated release at epoch ${{ env.EPOCH }}'
+          draft: false
+          prerelease: false
+
+      - name: Release
+        uses: csexton/release-asset-action@v2
+        with:
+          file: servers.json
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          release-url: ${{ steps.create_release.outputs.upload_url }}

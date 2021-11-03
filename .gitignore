@@ -1,0 +1,12 @@
+# ignore all files
+*
+# but include directories
+!*/
+
+!/.github/**
+!/.gitignore
+
+!/main.py
+!/requirements.txt
+
+!/README.md
